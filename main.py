@@ -1,6 +1,9 @@
 import gp
 from random import random,randint,choice
 
+################################################################################
+# WRAPPERS #####################################################################
+################################################################################
 
 addw = gp.fwrapper(lambda params:params[0] + params[1], 2, 'add')
 subw = gp.fwrapper(lambda params:params[0] - params[1], 2, 'subtract')
@@ -18,6 +21,11 @@ def isGreater(params):
     else: return 0
 gtw = gp.fwrapper(isGreater, 2, 'isGreater')
 
+
+
+################################################################################
+# TREES ########################################################################
+################################################################################
 
 def exampleTree():
     return gp.node(ifw, [
@@ -50,3 +58,33 @@ def makeRandomTree(nParams, maxDepth=4, fpr=0.5, ppr=0.6):
 
     else:
         return gp.constnode(randint(0, 10))
+
+
+
+################################################################################
+# MEASURING SUCCESS ############################################################
+################################################################################
+
+def hiddenFunction(x, y):
+    return x**2+2*y+3*x+5
+
+
+def buildHiddenSet():
+    rows = []
+
+    for i in range(200):
+        x = randint(0, 40)
+        y = randint(0, 40)
+        rows.append([x, y, hiddenFunction(x, y)])
+
+    return rows
+
+
+def scoreFunction(tree, rows):
+    diff = 0
+
+    for data in rows:
+        val = tree.evaluate([data[0], data[1]])
+        diff += abs(val - data[2])
+
+    return diff

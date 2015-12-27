@@ -30,7 +30,6 @@ class paramnode:
         self.index = index
 
     def evaluate(self, values):
-        print self.index
         return values[self.index]
 
     def display(self, indent=0):
