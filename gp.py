@@ -1,49 +1,49 @@
-from random import random,randint,choice
 from copy import deepcopy
 from math import log
 
 class fwrapper:
-    def __init__(self,function,childcount,name):
+    def __init__(self, function, childCount, name):
         self.function = function
-        self.childcount = childcount
+        self.childCount = childCount
         self.name = name
 
 
 class node:
-    def __init__(self,fw,children):
-        self.function = fw.function
-        self.name = fw.name
+    def __init__(self, wrapper, children):
+        self.function = wrapper.function
+        self.name = wrapper.name
         self.children = children
 
-    def evaluate(self,inp):
-        results = [n.evaluate(inp) for n in self.children]
+    def evaluate(self, values):
+        results = [n.evaluate(values) for n in self.children]
         return self.function(results)
 
     def display(self, indent=0):
-        print (' '*indent)+self.name
-        for c in self.children:
-            c.display(indent+1)
+        print (' '*indent) + self.name
+        for child in self.children:
+            child.display(indent+1)
 
 
 
 class paramnode:
-    def __init__(self,idx):
-        self.idx = idx
+    def __init__(self, index):
+        self.index = index
 
-    def evaluate(self,inp):
-        return inp[self.idx]
+    def evaluate(self, values):
+        print self.index
+        return values[self.index]
 
-    def display(self,indent=0):
-        print '%sp%d' % (' '*indent, self.idx)
+    def display(self, indent=0):
+        print '%sp%d' % (' '*indent, self.index)
 
 
 
 class constnode:
-    def __init__(self,v):
-        self.v = v
+    def __init__(self, value):
+        self.value = value
 
-    def evaluate(self,inp):
-        return self.v
+    def evaluate(self, values):
+        return self.value
 
-    def display(self,indent=0):
-        print '%sconst%d' % (' '*indent, self.v)
+    def display(self, indent=0):
+        print '%sconst%d' % (' '*indent, self.value)
