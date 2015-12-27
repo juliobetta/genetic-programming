@@ -1,5 +1,6 @@
 import gp
 from random import random,randint,choice
+from copy import deepcopy
 
 ################################################################################
 # WRAPPERS #####################################################################
@@ -88,3 +89,32 @@ def scoreFunction(tree, rows):
         diff += abs(val - data[2])
 
     return diff
+
+
+
+################################################################################
+# EVOLUTION ####################################################################
+################################################################################
+
+def mutate(tree, nParams, probChange=0.1):
+    if random() < probChange:
+        return makeRandomTree(nParams)
+    else:
+        result = deepcopy(tree)
+        if isinstance(tree, gp.node):
+            result.children = [mutate(child, nParams, probChange)
+                               for child in tree.children]
+        return result
+
+
+def crossOver(tree1, tree2, probSwap=0.7, top=1):
+    if random() < probSwap and not top:
+        return deepcopy(tree2)
+    else:
+        result = deepcopy(tree1)
+        if isinstance(tree1, gp.node) and isinstance(tree2, gp.node):
+            result.children = [
+                crossOver(child, choice(tree2.children), probSwap, 0)
+                for child in tree1.children
+            ]
+        return result
