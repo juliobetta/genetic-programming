@@ -1,120 +1,46 @@
-import gp
-from random import random,randint,choice
-from copy import deepcopy
+import utils
 
-################################################################################
-# WRAPPERS #####################################################################
-################################################################################
+print "BUILDING RANDOM TREES \n\n"
 
-addw = gp.fwrapper(lambda params:params[0] + params[1], 2, 'add')
-subw = gp.fwrapper(lambda params:params[0] - params[1], 2, 'subtract')
-mulw = gp.fwrapper(lambda params:params[0] * params[1], 2, 'multiply')
+hiddenSet = utils.buildHiddenSet()
 
+random1 = utils.makeRandomTree(2)
+random2 = utils.makeRandomTree(2)
 
-def ifFunc(params):
-    if params[0] > params[1]: return params[1]
-    else: return params[2]
-ifw = gp.fwrapper(ifFunc, 3, 'if')
-
-
-def isGreater(params):
-    if params[0] > params[1]: return 1
-    else: return 0
-gtw = gp.fwrapper(isGreater, 2, 'isGreater')
+print str(utils.scoreFunction(random1, hiddenSet))
+print str(utils.scoreFunction(random2, hiddenSet))
 
 
 
-################################################################################
-# TREES ########################################################################
-################################################################################
+# mutation
 
-def exampleTree():
-    return gp.node(ifw, [
-        gp.node(gtw, [gp.paramnode(0), gp.constnode(3)]),
-        gp.node(addw, [gp.paramnode(1), gp.constnode(5)]),
-        gp.node(subw, [gp.paramnode(1), gp.constnode(2)])
-    ])
+print "\n\n MUTATION"
 
+mutatedRandom1 = utils.mutate(random1, 2)
+random1.display()
+mutatedRandom1.display()
 
-def makeRandomTree(nParams, maxDepth=4, fpr=0.5, ppr=0.6):
-    """ Make a random tree
-
-    Arguments:
-    nParams  -- Number of parameters that the tree will take
-    maxDepth -- Max depth of the tree (default 4)
-    fpr      -- Probability that the node created is a function (default 0.5)
-    ppr      -- Probability that the node created is a paramnode (default 0.6)
-    """
-
-    flist = [addw, mulw, ifw, gtw, subw]
-
-    if random() < fpr and maxDepth > 0:
-        wrapper = choice(flist)
-        children = [makeRandomTree(nParams, maxDepth-1, fpr, ppr)
-                    for i in range(wrapper.childCount)]
-        return gp.node(wrapper, children)
-
-    elif random() < ppr:
-        return gp.paramnode(randint(0, nParams-1))
-
-    else:
-        return gp.constnode(randint(0, 10))
+print str(utils.scoreFunction(mutatedRandom1, hiddenSet))
 
 
 
-################################################################################
-# MEASURING SUCCESS ############################################################
-################################################################################
+# crossover
 
-def hiddenFunction(x, y):
-    return x**2+2*y+3*x+5
+print "\n\n CROSSOVER"
 
+cross = utils.crossOver(random1, random2)
+random1.display()
+random2.display()
+cross.display()
 
-def buildHiddenSet():
-    rows = []
-
-    for i in range(200):
-        x = randint(0, 40)
-        y = randint(0, 40)
-        rows.append([x, y, hiddenFunction(x, y)])
-
-    return rows
-
-
-def scoreFunction(tree, rows):
-    diff = 0
-
-    for data in rows:
-        val = tree.evaluate([data[0], data[1]])
-        diff += abs(val - data[2])
-
-    return diff
+print str(utils.scoreFunction(cross, hiddenSet))
 
 
 
-################################################################################
-# EVOLUTION ####################################################################
-################################################################################
+# evolving
 
-def mutate(tree, nParams, probChange=0.1):
-    if random() < probChange:
-        return makeRandomTree(nParams)
-    else:
-        result = deepcopy(tree)
-        if isinstance(tree, gp.node):
-            result.children = [mutate(child, nParams, probChange)
-                               for child in tree.children]
-        return result
+print "\n\n EVOLVING"
 
+rankFunction = utils.getRankFunction(hiddenSet)
 
-def crossOver(tree1, tree2, probSwap=0.7, top=1):
-    if random() < probSwap and not top:
-        return deepcopy(tree2)
-    else:
-        result = deepcopy(tree1)
-        if isinstance(tree1, gp.node) and isinstance(tree2, gp.node):
-            result.children = [
-                crossOver(child, choice(tree2.children), probSwap, 0)
-                for child in tree1.children
-            ]
-        return result
+utils.evolve(2, 500, rankFunction)

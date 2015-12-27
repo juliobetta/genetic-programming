@@ -1,5 +1,3 @@
-from math import log
-
 class fwrapper:
     def __init__(self, function, childCount, name):
         self.function = function
