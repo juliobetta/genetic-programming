@@ -1,11 +1,11 @@
-class fwrapper:
-    def __init__(self, function, childCount, name):
+class Wrapper:
+    def __init__(self, function, child_count, name):
         self.function = function
-        self.childCount = childCount
+        self.child_count = child_count
         self.name = name
 
 
-class node:
+class Node:
     def __init__(self, wrapper, children):
         self.function = wrapper.function
         self.name = wrapper.name
@@ -22,7 +22,7 @@ class node:
 
 
 
-class paramnode:
+class ParamNode:
     def __init__(self, index):
         self.index = index
 
@@ -34,7 +34,7 @@ class paramnode:
 
 
 
-class constnode:
+class ConstNode:
     def __init__(self, value):
         self.value = value
 
